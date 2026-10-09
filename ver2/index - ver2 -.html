@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css">
+    <title>My Todo</title>
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- =====================
+        サイドバー
+  ====================== -->
+
+      <aside class="sidebar">
+        <div class="logo">
+          <div class="logo-icon">✓</div>
+          <span class="logo-text">My Todo</span>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">ナビゲーション</div>
+
+          <button class="nav-item active" data-filter="memo" title="TODO">
+            <span class="nav-icon">📝</span>
+            <span class="nav-text">TODO</span>
+            <span class="nav-count" id="memoCount">0</span>
+          </button>
+
+          <button class="nav-item" data-filter="today" title="今日">
+            <span class="nav-icon">📅</span>
+            <span class="nav-text">今日</span>
+            <span class="nav-count" id="todayCount">0</span>
+          </button>
+
+          <button class="nav-item" data-filter="week" title="次の7日間">
+            <span class="nav-icon">📆</span>
+            <span class="nav-text">次の7日間</span>
+            <span class="nav-count" id="weekCount">0</span>
+          </button>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">リスト</div>
+
+          <button class="nav-item" data-category="仕事" title="仕事">
+            <span class="nav-icon">💼</span>
+            <span class="nav-text">仕事</span>
+          </button>
+
+          <button
+            class="nav-item"
+            data-category="プライベート"
+            title="プライベート"
+          >
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">プライベート</span>
+          </button>
+
+          <button class="nav-item" data-category="勉強" title="勉強">
+            <span class="nav-icon">📚</span>
+            <span class="nav-text">勉強</span>
+          </button>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">その他</div>
+
+          <button class="nav-item" data-filter="completed" title="完了">
+            <span class="nav-icon">✓</span>
+            <span class="nav-text">完了</span>
+          </button>
+        </div>
+
+        <!-- =====================
+         バックアップ機能
+    ====================== -->
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">データ管理</div>
+
+          <button class="nav-item" id="exportBtn" title="JSON書き出し">
+            <span class="nav-icon">📤</span>
+            <span class="nav-text">JSON書き出し</span>
+          </button>
+
+          <button class="nav-item" id="importBtn" title="JSON読み込み">
+            <span class="nav-icon">📥</span>
+            <span class="nav-text">JSON読み込み</span>
+          </button>
+          <input
+            type="file"
+            id="importFile"
+            accept=".json"
+            style="display: none"
+          />
+        </div>
+
+        <!-- =====================
+         ヘルプ
+    ====================== -->
+
+        <div class="sidebar-section">
+          <div class="sidebar-title">ヘルプ</div>
+
+          <button class="nav-item" id="helpBtn" title="My Todo の使い方">
+            <span class="nav-icon">❓</span>
+            <span class="nav-text"> My Todo の使い方</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- =====================
+        メイン
+  ====================== -->
+
+      <main class="main">
+        <header class="header">
+          <div class="header-left-group">
+            <div class="header-title">タスク管理</div>
+
+            <button
+              class="header-icon-btn"
+              id="openCalendarModal"
+              title="月間カレンダーを開く"
+            >
+              📅
+            </button>
+
+            <div class="header-upcoming" id="upcomingTask">
+              <span class="upcoming-label">次の予定</span>
+              <span class="upcoming-content" id="upcomingTaskText"
+                >予定なし</span
+              >
+            </div>
+          </div>
+
+          <div class="header-right">
+            <input
+              type="text"
+              id="search"
+              class="search"
+              placeholder="🔍タスクを検索..."
+            />
+
+            <!-- ダークモード切り替えボタン -->
+            <button
+              class="header-icon-btn"
+              id="darkModeBtn"
+              title="ダークモード切替"
+            >
+              🌙
+            </button>
+          </div>
+        </header>
+
+        <div class="content">
+          <!-- =====================
+           タスクエリア
+      ====================== -->
+
+          <section class="task-area">
+            <div class="page-top">
+              <div>
+                <div class="page-title" id="pageTitle">TODO</div>
+
+                <div class="page-subtitle" id="pageSubtitle">
+                  一時的なメモや未整理のタスク
+                </div>
+              </div>
+
+              <div class="week-strip" id="weekStrip"></div>
+
+              <button class="delete-all-button" id="deleteAllCompleted">
+                完了済みのタスクを全削除
+              </button>
+            </div>
+
+            <!-- クイック追加 -->
+
+            <div class="add-task" id="quickAddTaskContainer">
+              <div
+                class="add-task-input-wrap"
+                id="taskInputWrap"
+                style="display: none"
+              >
+                <span class="add-task-icon">＋</span>
+                <input
+                  type="text"
+                  id="quickInput"
+                  placeholder="タスクを追加..."
+                  readonly
+                />
+              </div>
+
+              <div class="add-task-input-wrap" id="memoInputWrap">
+                <span class="add-task-icon">📝</span>
+                <input
+                  type="text"
+                  id="quickMemoInput"
+                  placeholder="TODOを追加..."
+                  readonly
+                />
+              </div>
+            </div>
+
+            <!-- タスク一覧 -->
+
+            <div id="taskList"></div>
+          </section>
+
+          <!-- =====================
+           詳細
+      ====================== -->
+
+          <aside class="detail" id="detailPanel">
+            <div class="detail-empty">
+              タスクを選択すると<br />
+              詳細が表示されます
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <!-- =========================
+     月間カレンダーモーダル
+========================= -->
+
+    <div class="calendar-modal" id="calendarModal">
+      <div class="calendar-box">
+        <div class="cal-header">
+          <button class="cal-nav-btn" id="calPrevMonth">‹</button>
+          <h3 id="calMonthTitle">2026年 9月</h3>
+          <button class="cal-nav-btn" id="calNextMonth">›</button>
+        </div>
+        <div class="cal-grid cal-weekdays">
+          <div>日</div>
+          <div>月</div>
+          <div>火</div>
+          <div>水</div>
+          <div>木</div>
+          <div>金</div>
+          <div>土</div>
+        </div>
+        <div class="cal-grid" id="calDaysGrid"></div>
+      </div>
+    </div>
+
+    <!-- =========================
+     本文全文表示モーダル
+========================= -->
+
+    <div class="memo-modal" id="memoModal">
+      <div class="memo-modal-box">
+        <div class="memo-modal-header">
+          <h3 id="memoModalTitle">本文全文</h3>
+          <button class="memo-modal-close" id="memoModalClose">×</button>
+        </div>
+        <div class="memo-modal-content" id="memoModalBody"></div>
+      </div>
+    </div>
+
+    <!-- =========================
+     使い方説明モーダル
+========================= -->
+
+    <div class="memo-modal" id="helpModal">
+      <div class="memo-modal-box">
+        <div class="memo-modal-header">
+          <h3>❓ My Todo の使い方</h3>
+          <button class="memo-modal-close" id="helpModalClose">×</button>
+        </div>
+        <div class="memo-modal-content">
+          <b>1. タスクの追加と管理</b><br />
+          ・「TODO」や「今日」、「次の7日間」からタスクを追加・確認できます。<br />
+          ・タスクをクリックすると、詳細パネルで時間や優先度、メモを変更できます。<br />
+          ・タスクのメモをクリックして全文を表示できます。<br />
+
+          <b>2. 次の予定機能</b><br />
+          ・画面上部にある「次の予定」をクリックすると、一番近い予定の詳細（日付・時間・メモ）をその場で確認できます。<br />
+
+          <b>3. データの保存と復元</b><br />
+          ・📤JSON書き出し：いま登録されているすべてのタスクを、ファイルとして保存（バックアップ）できます。<br />
+          ・📥JSON読み込み：バックアップしたデータを他の端末などで読み込むことでデータを引き継いで使用することができます。<br />
+
+          <b>※注意</b>
+          過ぎた予定は、ページの再読み込み（更新）をしないと「次の予定」に表示し続けてしまうことがあります。
+        </div>
+      </div>
+    </div>
+
+    <script src="./main.js"></script>
+  </body>
+</html>
