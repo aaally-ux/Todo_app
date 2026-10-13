@@ -1468,14 +1468,20 @@
           ・タスクをクリックすると、詳細パネルで時間や優先度、メモを変更できます。<br />
           ・タスクのメモをクリックして全文を表示できます。<br />
 
-          <b>2. 次の予定機能</b><br />
+          <b>2. タスクの検索</b><br />
+          ・画面右上の「タスクを検索...」ボックスにキーワードを入力すると、一致するタスクをリアルタイムに絞り込んで表示できます。<br />
+
+          <b>3. 次の予定機能</b><br />
           ・画面上部にある「次の予定」をクリックすると、一番近い予定の詳細（日付・時間・メモ）をその場で確認できます。<br />
 
-          <b>3. プッシュ通知機能（ON/OFF切替・手動消去）</b><br />
+          <b>4. ダークモード切り替え</b><br />
+          ・画面右上の 🌙 マーク（または ☀️ マーク）を押すことで、画面のテーマをダークモード／ライトモードに切り替えることができます。<br />
+
+          <b>5. プッシュ通知機能（ON/OFF切替・手動消去）</b><br />
           ・サイドバーの「通知：OFF/ON」ボタンを押すことで、いつでも通知の有効化と無効化を切り替えられます。<br />
           ・時間になると届く通知は、クリックするまで画面に残り続けます。<br />
 
-          <b>4. データの保存と復元</b><br />
+          <b>6. データの保存と復元</b><br />
           ・📤JSON書き出し：いま登録されているすべてのタスクを、ファイルとして保存（バックアップ）できます。<br />
           ・📥JSON読み込み：バックアップしたデータを他の端末などで読み込むことでデータを引き継いで使用することができます。<br />
 
@@ -1599,16 +1605,23 @@
       const darkModeBtn = document.getElementById("darkModeBtn");
       const savedDarkMode = localStorage.getItem("myTodoDarkMode") === "true";
 
+      function updateDarkModeButtonTitle() {
+        const isDark = document.body.classList.contains("dark-mode");
+        darkModeBtn.title = isDark ? "ライトモード切替" : "ダークモード切替";
+      }
+
       if (savedDarkMode) {
         document.body.classList.add("dark-mode");
         darkModeBtn.textContent = "☀️";
       }
+      updateDarkModeButtonTitle();
 
       darkModeBtn.addEventListener("click", () => {
         document.body.classList.toggle("dark-mode");
         const isDark = document.body.classList.contains("dark-mode");
         localStorage.setItem("myTodoDarkMode", isDark);
         darkModeBtn.textContent = isDark ? "☀️" : "🌙";
+        updateDarkModeButtonTitle();
       });
 
       /* =========================
