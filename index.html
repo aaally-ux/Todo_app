@@ -117,9 +117,11 @@
       .app {
         display: flex;
         height: 100vh;
+        height: 100dvh;
         overflow: hidden;
         padding: 12px;
         gap: 12px;
+        position: relative;
       }
 
       /* =========================
@@ -140,6 +142,8 @@
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         overflow-y: auto;
         overflow-x: hidden;
+        transition: width 0.3s, padding 0.3s;
+        flex-shrink: 0;
       }
 
       .logo {
@@ -182,6 +186,7 @@
         color: var(--sub-text);
         font-size: 11px;
         font-weight: 600;
+        white-space: nowrap;
       }
 
       .nav-item {
@@ -261,14 +266,13 @@
 ========================= */
 
       .header {
-        height: 70px;
+        min-height: 64px;
+        padding: 10px 20px;
 
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 15px;
-
-        padding: 0 30px;
+        gap: 12px;
 
         background: var(--white);
         border-bottom: 1px solid var(--border);
@@ -280,12 +284,15 @@
       .header-left-group {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
+        min-width: 0;
+        flex-shrink: 1;
       }
 
       .header-title {
-        font-size: 19px;
+        font-size: 18px;
         font-weight: 700;
+        white-space: nowrap;
       }
 
       /* 「次の予定」ウィジェット */
@@ -296,12 +303,14 @@
         background: var(--primary-light);
         border: 1px solid rgba(70, 113, 246, 0.2);
         border-radius: 20px;
-        padding: 5px 14px;
+        padding: 5px 12px;
         font-size: 12px;
         color: var(--primary);
-        max-width: 260px;
+        max-width: 240px;
         cursor: pointer;
         transition: 0.15s;
+        flex-shrink: 1;
+        min-width: 0;
       }
 
       .header-upcoming:hover {
@@ -316,6 +325,7 @@
         padding: 2px 6px;
         border-radius: 10px;
         white-space: nowrap;
+        flex-shrink: 0;
       }
 
       .upcoming-content {
@@ -331,12 +341,12 @@
         background: var(--search-bg);
         border: 1px solid var(--border);
         border-radius: 8px;
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
+        font-size: 15px;
         transition: 0.15s;
         color: var(--text);
         flex-shrink: 0;
@@ -346,6 +356,31 @@
         background: var(--primary-light);
         border-color: var(--primary);
         color: var(--primary);
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .search {
+        width: 180px;
+        max-width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        outline: none;
+        background: var(--search-bg);
+        color: var(--text);
+        font-size: 13px;
+        transition: width 0.2s;
+      }
+
+      .search:focus {
+        border-color: var(--primary);
+        background: var(--white);
       }
 
       /* =========================
@@ -359,7 +394,7 @@
         align-items: center;
         justify-content: center;
         background: var(--modal-overlay);
-        z-index: 100;
+        z-index: 300;
       }
 
       .calendar-modal.show {
@@ -474,7 +509,7 @@
         align-items: center;
         justify-content: center;
         background: var(--modal-overlay);
-        z-index: 200;
+        z-index: 300;
       }
 
       .memo-modal.show {
@@ -534,8 +569,9 @@
         display: none;
         align-items: center;
         gap: 6px;
-        margin-left: 20px;
-        margin-right: auto;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        max-width: 100%;
       }
 
       .week-strip.show {
@@ -555,6 +591,7 @@
         cursor: pointer;
         position: relative;
         transition: 0.15s;
+        flex-shrink: 0;
       }
 
       .week-strip-item:hover {
@@ -595,28 +632,6 @@
         background: white;
       }
 
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-right: 20px;
-      }
-
-      .search {
-        width: 240px;
-        padding: 9px 13px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        outline: none;
-        background: var(--search-bg);
-        color: var(--text);
-      }
-
-      .search:focus {
-        border-color: var(--primary);
-        background: var(--white);
-      }
-
       /* =========================
    コンテンツ
 ========================= */
@@ -634,7 +649,7 @@
 
       .task-area {
         flex: 1;
-        padding: 28px 35px;
+        padding: 20px 24px;
         overflow-y: auto;
       }
 
@@ -642,16 +657,18 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 12px;
         margin-bottom: 18px;
+        flex-wrap: wrap;
       }
 
       .page-title {
-        font-size: 24px;
+        font-size: 22px;
         font-weight: 700;
       }
 
       .page-subtitle {
-        margin-top: 5px;
+        margin-top: 4px;
         color: var(--sub-text);
         font-size: 13px;
         display: none;
@@ -661,10 +678,11 @@
       .delete-all-button {
         border: 1px solid var(--border);
         border-radius: 9px;
-        padding: 10px 17px;
+        padding: 8px 14px;
         background: var(--white);
         color: var(--sub-text);
         font-weight: 600;
+        font-size: 13px;
         display: none;
         transition: 0.15s;
       }
@@ -686,11 +704,11 @@
       .add-task {
         display: flex;
         gap: 10px;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
         background: var(--add-bg);
         border: 1px solid var(--border);
         border-radius: 10px;
-        padding: 6px 12px;
+        padding: 8px 14px;
         align-items: center;
         transition: 0.2s;
         cursor: pointer;
@@ -723,7 +741,7 @@
         width: 100%;
         border: 0;
         outline: none;
-        padding: 8px 0;
+        padding: 6px 0;
         background: transparent;
         font-size: 14px;
         pointer-events: none;
@@ -735,14 +753,14 @@
 ========================= */
 
       .task-group {
-        margin-bottom: 28px;
+        margin-bottom: 24px;
       }
 
       .group-title {
         display: flex;
         align-items: center;
         gap: 7px;
-        margin-bottom: 9px;
+        margin-bottom: 8px;
         font-size: 13px;
         font-weight: 700;
         color: var(--sub-text);
@@ -761,7 +779,7 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        min-height: 52px;
+        min-height: 50px;
         padding: 8px 12px;
         border-bottom: 1px solid var(--task-border);
         background: transparent;
@@ -841,17 +859,18 @@
       .task-meta {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-top: 4px;
+        gap: 8px;
+        margin-top: 3px;
         color: var(--sub-text);
         font-size: 11px;
+        flex-wrap: wrap;
       }
 
       .task-memo-preview {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        max-width: 250px;
+        max-width: 200px;
         cursor: pointer;
         color: var(--sub-text);
         text-decoration: underline dotted;
@@ -865,6 +884,7 @@
         width: 6px;
         height: 6px;
         border-radius: 50%;
+        flex-shrink: 0;
       }
 
       .priority.high {
@@ -882,6 +902,7 @@
       .task-time {
         color: var(--sub-text);
         font-size: 12px;
+        flex-shrink: 0;
       }
 
       .delete-task {
@@ -890,6 +911,8 @@
         background: transparent;
         opacity: 0;
         transition: 0.15s;
+        padding: 4px 8px;
+        font-size: 16px;
       }
 
       .task:hover .delete-task {
@@ -901,20 +924,37 @@
       }
 
       /* =========================
-   詳細パネル
+   詳細パネル＆オーバーレイ
 ========================= */
+
+      .detail-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--modal-overlay);
+        z-index: 140;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+      }
+
+      .detail-overlay.show {
+        display: block;
+        opacity: 1;
+      }
 
       .detail {
         width: var(--detail-width);
         background: var(--white);
         border-left: 1px solid var(--border);
-        padding: 24px 28px;
+        padding: 20px 22px;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
         transition:
           background 0.3s,
-          border-color 0.3s;
+          border-color 0.3s,
+          transform 0.25s ease;
+        flex-shrink: 0;
       }
 
       .detail-body {
@@ -936,7 +976,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
       }
 
       .detail-header h2 {
@@ -948,23 +988,25 @@
         border: 0;
         background: transparent;
         color: var(--sub-text);
-        font-size: 18px;
+        font-size: 20px;
+        padding: 4px 8px;
+        cursor: pointer;
       }
 
       .detail-title {
         width: 100%;
-        padding: 10px 0;
+        padding: 8px 0;
         border: 0;
         border-bottom: 1px solid var(--border);
         outline: none;
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 600;
         background: transparent;
         color: var(--text);
       }
 
       .detail-row {
-        padding: 14px 0;
+        padding: 12px 0;
         border-bottom: 1px solid var(--task-border);
       }
 
@@ -1026,7 +1068,7 @@
 
       .detail textarea {
         width: 100%;
-        min-height: 140px;
+        min-height: 120px;
         resize: vertical;
         border: 1px solid var(--border);
         border-radius: 6px;
@@ -1052,7 +1094,7 @@
 
       .save-detail-btn {
         flex: 1;
-        padding: 11px;
+        padding: 10px;
         border: 0;
         border-radius: 8px;
         font-weight: 600;
@@ -1071,25 +1113,56 @@
 ========================= */
 
       .empty {
-        padding: 50px 20px;
+        padding: 40px 20px;
         text-align: center;
         color: var(--sub-text);
       }
 
-      /* =========================
-   スマホ対応メディアクエリ
-========================= */
+      /* =========================================================
+   レスポンシブ（画面分割・タブレット・画面幅短縮時の最適化）
+========================================================= */
 
+      /* 画面を半分にした時（1024px以下）のレイアウト調整 */
+      @media (max-width: 1024px) {
+        .sidebar {
+          width: 68px;
+          padding: 12px 6px;
+        }
+
+        .logo {
+          justify-content: center;
+          padding: 4px 0 12px;
+        }
+
+        .logo-text,
+        .sidebar-title,
+        .nav-text,
+        .nav-count {
+          display: none;
+        }
+
+        .nav-item {
+          justify-content: center;
+          padding: 10px 0;
+        }
+
+        .header-upcoming {
+          max-width: 160px;
+        }
+
+        .search {
+          width: 130px;
+        }
+      }
+
+      /* 画面幅900px以下（画面を細めに半分分割した場合） */
       @media (max-width: 900px) {
         .app {
           padding: 0;
           gap: 0;
-          height: 100dvh;
         }
 
         .sidebar {
-          width: 64px;
-          padding: 12px 6px;
           border-radius: 0;
           border-top: 0;
           border-bottom: 0;
@@ -1101,51 +1174,32 @@
           border: 0;
         }
 
-        .logo {
-          justify-content: center;
-          padding: 5px 0 15px;
-        }
-
-        .logo-text,
-        .nav-text,
-        .sidebar-title,
-        .nav-count {
-          display: none;
-        }
-
-        .nav-item {
-          justify-content: center;
-          padding: 10px 0;
-        }
-
+        /* 詳細パネルをドロワー化 */
         .detail {
-          display: none;
           position: fixed;
-          inset: 0;
-          width: 100%;
-          height: 100%;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 320px;
+          max-width: 85vw;
           z-index: 150;
-          border-left: none;
-          border-radius: 0;
-          padding: 20px;
+          box-shadow: -4px 0 25px rgba(0, 0, 0, 0.15);
+          transform: translateX(100%);
         }
 
         .detail.mobile-show {
-          display: flex;
+          transform: translateX(0);
         }
 
-        .task-area {
-          padding: 20px 16px;
-        }
-
-        .search {
-          width: 140px;
+        .delete-task {
+          opacity: 1;
         }
       }
 
-      @media (max-width: 600px) {
+      /* 画面幅640px以下（完全なスマホ・狭いウィンドウ幅） */
+      @media (max-width: 640px) {
         .header {
-          padding: 0 12px;
+          padding: 8px 12px;
         }
 
         .header-title {
@@ -1157,28 +1211,26 @@
         }
 
         .search {
-          width: 110px;
+          width: 100px;
+          font-size: 12px;
+          padding: 6px 8px;
         }
 
         .task-area {
-          padding: 16px 10px;
+          padding: 16px 12px;
         }
 
         .page-title {
-          font-size: 20px;
+          font-size: 18px;
         }
 
-        .week-strip {
-          display: none !important;
+        .week-strip-item {
+          width: 34px;
+          height: 40px;
         }
 
         .add-task {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .delete-task {
-          opacity: 1;
+          padding: 6px 10px;
         }
       }
     </style>
@@ -1399,6 +1451,9 @@
 
             <div id="taskList"></div>
           </section>
+
+          <!-- オーバーレイ（モバイル・ハーフスクリーン時用） -->
+          <div class="detail-overlay" id="detailOverlay"></div>
 
           <!-- =====================
            詳細
@@ -2309,6 +2364,7 @@
 
         if (window.innerWidth <= 900) {
           document.getElementById("detailPanel").classList.add("mobile-show");
+          document.getElementById("detailOverlay").classList.add("show");
         }
       }
 
@@ -2478,6 +2534,7 @@
         selectedTaskId = null;
         const panel = document.getElementById("detailPanel");
         panel.classList.remove("mobile-show");
+        document.getElementById("detailOverlay").classList.remove("show");
         panel.innerHTML = `
     <div class="detail-empty">
       タスクを選択すると<br>
@@ -2485,6 +2542,8 @@
     </div>
   `;
       }
+
+      document.getElementById("detailOverlay").addEventListener("click", closeDetailPanel);
 
       /* =========================
    クイック追加欄をクリックして新規作成
@@ -2514,6 +2573,7 @@
 
         if (window.innerWidth <= 900) {
           document.getElementById("detailPanel").classList.add("mobile-show");
+          document.getElementById("detailOverlay").classList.add("show");
         }
 
         const saveBtn = document.getElementById("saveDetailBtn");
