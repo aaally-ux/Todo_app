@@ -2843,7 +2843,7 @@
               notifiedTaskIds.add(task.id);
               
               // requireInteraction: true により、ユーザーがクリックするまで通知が消えずに残り続けます
-              new Notification("【期限のタスク】 " + task.title, {
+              new Notification("【My Todo】 " + task.title, {
                 body: `時間になりました (${task.time})\n${task.memo ? task.memo : "メモはありません"}`,
                 requireInteraction: true
               });
