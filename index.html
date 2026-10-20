@@ -187,6 +187,23 @@
         font-size: 11px;
         font-weight: 600;
         white-space: nowrap;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .add-category-btn {
+        background: transparent;
+        border: 0;
+        color: var(--primary);
+        font-size: 14px;
+        font-weight: bold;
+        padding: 0 4px;
+        cursor: pointer;
+      }
+
+      .add-category-btn:hover {
+        opacity: 0.8;
       }
 
       .nav-item {
@@ -209,6 +226,7 @@
         transition: 0.15s;
         white-space: nowrap;
         overflow: hidden;
+        position: relative;
       }
 
       .nav-item:hover {
@@ -238,6 +256,24 @@
         color: var(--sub-text);
         font-size: 12px;
         flex-shrink: 0;
+      }
+
+      .delete-category-btn {
+        display: none;
+        margin-left: auto;
+        background: transparent;
+        border: 0;
+        color: var(--sub-text);
+        font-size: 13px;
+        padding: 0 4px;
+      }
+
+      .nav-item:hover .delete-category-btn {
+        display: inline-block;
+      }
+
+      .delete-category-btn:hover {
+        color: var(--red);
       }
 
       /* =========================
@@ -1270,26 +1306,12 @@
         </div>
 
         <div class="sidebar-section">
-          <div class="sidebar-title">リスト</div>
+          <div class="sidebar-title">
+            <span>リスト</span>
+            <button class="add-category-btn" id="addCategoryBtn" title="リストを追加">＋</button>
+          </div>
 
-          <button class="nav-item" data-category="仕事" title="仕事">
-            <span class="nav-icon">💼</span>
-            <span class="nav-text">仕事</span>
-          </button>
-
-          <button
-            class="nav-item"
-            data-category="プライベート"
-            title="プライベート"
-          >
-            <span class="nav-icon">🏠</span>
-            <span class="nav-text">プライベート</span>
-          </button>
-
-          <button class="nav-item" data-category="勉強" title="勉強">
-            <span class="nav-icon">📚</span>
-            <span class="nav-text">勉強</span>
-          </button>
+          <div id="categoryListContainer"></div>
         </div>
 
         <div class="sidebar-section">
@@ -1663,12 +1685,21 @@
         },
       ];
 
+      const initialCategories = [
+        { name: "仕事", icon: "💼" },
+        { name: "プライベート", icon: "🏠" },
+        { name: "勉強", icon: "📚" }
+      ];
+
       /* =========================
    データ
 ========================= */
 
       let tasks =
         JSON.parse(localStorage.getItem("myTodoTasks")) || initialTasks;
+
+      let categories =
+        JSON.parse(localStorage.getItem("myTodoCategories")) || initialCategories;
 
       let currentFilter = "memo";
       let currentCategory = null;
@@ -1768,6 +1799,85 @@
         updateUpcomingTask();
       }
 
+      function saveCategories() {
+        localStorage.setItem("myTodoCategories", JSON.stringify(categories));
+      }
+
+      /* =========================
+   リスト（カテゴリ）管理機能
+========================= */
+
+      function renderCategories() {
+        const container = document.getElementById("categoryListContainer");
+        if (!container) return;
+        container.innerHTML = "";
+
+        categories.forEach((cat) => {
+          const btn = document.createElement("button");
+          btn.className = "nav-item";
+          btn.dataset.category = cat.name;
+          btn.title = cat.name;
+
+          if (currentCategory === cat.name) {
+            btn.classList.add("active");
+          }
+
+          btn.innerHTML = `
+            <span class="nav-icon">${cat.icon || "📁"}</span>
+            <span class="nav-text">${escapeHTML(cat.name)}</span>
+            <button class="delete-category-btn" data-cat-name="${escapeHTML(cat.name)}" title="リストを削除">×</button>
+          `;
+
+          btn.addEventListener("click", (e) => {
+            if (e.target.classList.contains("delete-category-btn")) return;
+            
+            document.querySelectorAll(".sidebar-section .nav-item").forEach((item) => item.classList.remove("active"));
+            btn.classList.add("active");
+
+            currentCategory = cat.name;
+            selectedDateFilter = null;
+            currentFilter = "all";
+
+            updatePageTitle();
+            renderTasks();
+          });
+
+          const deleteBtn = btn.querySelector(".delete-category-btn");
+          deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (confirm(`リスト「${cat.name}」を削除しますか？`)) {
+              categories = categories.filter((c) => c.name !== cat.name);
+              saveCategories();
+              if (currentCategory === cat.name) {
+                currentCategory = null;
+                currentFilter = "memo";
+                document.querySelector('[data-filter="memo"]').classList.add("active");
+              }
+              renderCategories();
+              updatePageTitle();
+              renderTasks();
+            }
+          });
+
+          container.appendChild(btn);
+        });
+      }
+
+      document.getElementById("addCategoryBtn").addEventListener("click", () => {
+        const name = prompt("新しいリスト名を入力してください:");
+        if (!name || !name.trim()) return;
+        const trimmedName = name.trim();
+
+        if (categories.some((c) => c.name === trimmedName)) {
+          alert("同じ名前のリストが既に存在します。");
+          return;
+        }
+
+        categories.push({ name: trimmedName, icon: "📁" });
+        saveCategories();
+        renderCategories();
+      });
+
       /* =========================
    直近の予定更新
 ========================= */
@@ -1822,6 +1932,7 @@
 
             document.getElementById("memoModalTitle").textContent =
               nextTask.title;
+            document.getElementById("memoModalBody").style.whiteSpace = "pre-wrap";
             document.getElementById("memoModalBody").textContent =
               dateStr + memoText;
             document.getElementById("memoModal").classList.add("show");
@@ -2271,6 +2382,7 @@
 
         document.getElementById("memoModalTitle").textContent =
           task.title || "本文詳細";
+        document.getElementById("memoModalBody").style.whiteSpace = "pre-wrap";
         document.getElementById("memoModalBody").textContent = task.memo;
         memoModal.classList.add("show");
       }
@@ -2438,6 +2550,11 @@
           return;
         }
 
+        const categoryOptionsHtml = categories.map((c) => {
+          const selected = task.category === c.name ? "selected" : "";
+          return `<option value="${escapeHTML(c.name)}" ${selected}>${escapeHTML(c.name)}</option>`;
+        }).join("");
+
         panel.innerHTML = `
     <div class="detail-header">
       <h2>タスク編集</h2>
@@ -2456,9 +2573,7 @@
         <div class="detail-label">カテゴリ</div>
         <div class="detail-value">
           <select class="form-select" id="detailCategory">
-            <option ${task.category === "仕事" ? "selected" : ""}>仕事</option>
-            <option ${task.category === "プライベート" ? "selected" : ""}>プライベート</option>
-            <option ${task.category === "勉強" ? "selected" : ""}>勉強</option>
+            ${categoryOptionsHtml}
           </select>
         </div>
       </div>
@@ -2582,10 +2697,12 @@
         const isMemoMode =
           currentFilter === "memo" && !currentCategory && !selectedDateFilter;
 
+        const defaultCategoryName = categories.length > 0 ? categories[0].name : "仕事";
+
         const tempTask = {
           id: generateId(),
           title: "",
-          category: isMemoMode ? "TODO" : currentCategory || "仕事",
+          category: isMemoMode ? "TODO" : currentCategory || defaultCategoryName,
           date: isMemoMode ? "" : selectedDateFilter || getToday(),
           time: "",
           priority: isMemoMode ? "none" : "medium",
@@ -2659,10 +2776,10 @@
       });
 
       /* =========================
-   サイドバー
+   サイドバー固定ナビゲーションボタン
 ========================= */
 
-      document.querySelectorAll(".nav-item").forEach((button) => {
+      document.querySelectorAll(".sidebar-section .nav-item").forEach((button) => {
         button.addEventListener("click", () => {
           if (
             button.id === "exportBtn" ||
@@ -2677,15 +2794,11 @@
             .forEach((item) => item.classList.remove("active"));
           button.classList.add("active");
 
-          currentCategory = button.dataset.category || null;
+          currentCategory = null;
           selectedDateFilter = null;
 
           if (button.dataset.filter) {
             currentFilter = button.dataset.filter;
-          }
-
-          if (currentCategory) {
-            currentFilter = "all";
           }
 
           updatePageTitle();
@@ -2795,7 +2908,6 @@
       const notificationBtn = document.getElementById("notificationBtn");
       const notificationText = document.getElementById("notificationText");
 
-      // ユーザーが手動で保存した通知ON/OFF設定（デフォルトはfalse）
       let isNotificationEnabled = localStorage.getItem("myTodoNotificationEnabled") === "true";
 
       function updateNotificationButtonUI() {
@@ -2819,7 +2931,6 @@
           }
 
           if (Notification.permission === "granted") {
-            // すでにブラウザ権限がある場合は、ON/OFFをトグル切り替え
             isNotificationEnabled = !isNotificationEnabled;
             localStorage.setItem("myTodoNotificationEnabled", isNotificationEnabled);
             updateNotificationButtonUI();
@@ -2827,13 +2938,12 @@
             if (isNotificationEnabled) {
               new Notification("My Todo", {
                 body: "通知が有効になりました！",
-                requireInteraction: true // クリックするまで消えない
+                requireInteraction: true
               });
             }
           } else if (Notification.permission === "denied") {
             alert("ブラウザの設定で通知がブロックされています。ブラウザのサイト設定から許可に変更してください。");
           } else {
-            // まだ許可を求めていない場合はリクエストを送る
             Notification.requestPermission().then((permission) => {
               if (permission === "granted") {
                 isNotificationEnabled = true;
@@ -2854,7 +2964,6 @@
       const notifiedTaskIds = new Set();
 
       setInterval(() => {
-        // 権限があり、かつユーザーが通知を「ON」にしているときのみ通知する
         if (Notification.permission !== "granted" || !isNotificationEnabled) return;
 
         const todayStr = getToday();
@@ -2867,7 +2976,6 @@
             if (!notifiedTaskIds.has(task.id)) {
               notifiedTaskIds.add(task.id);
               
-              // requireInteraction: true により、ユーザーがクリックするまで通知が消えずに残り続けます
               new Notification("【My Todo】 " + task.title, {
                 body: `時間になりました (${task.time})\n${task.memo ? task.memo : "メモはありません"}`,
                 requireInteraction: true
@@ -2940,6 +3048,7 @@
    initialization
 ========================= */
 
+      renderCategories();
       renderTasks();
       updateCounts();
       updatePageTitle();
